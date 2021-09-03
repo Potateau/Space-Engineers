@@ -1,2 +1,2 @@
 # Space-Engineers
-Scripts for in game code blocks
+Scripts for in game programming blocks
