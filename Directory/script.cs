@@ -38,11 +38,11 @@
                     allTextPanels[j].WriteText("MAIN DIRECTORY\n" +
                         "Change the custom data of an LCD to the \n" +
                         "following to learn how to adjust the\n" +
-                        "custom data of cargo containers for auto\n" +
+                        "custom data of blocks for auto\n" +
                         "sorting, stock maintanance, and display\n" +
                         "Requires related scripts to function\n" +
-                        "Cargo Display: \"cargo directory\"\n" +
-                        "Sorting Directory: \"sorting directory\"\n" +
+                        "Display: \"cargo display directory\"\n" +
+                        "Sorting: \"cargo sorting directory\"\n" +
                         "Assembly Directory_WIP: \"assembly directory\"\n" +
                         "Power Level Display_WIP: \"power directory\"\n" +
                         "Page 2: WIP\n" +
@@ -52,12 +52,12 @@
 
 
                 //checks if the text panel custom data contains the term sorting directory
-                if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("sortingdirectory"))
+                if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargosortingdirectory"))
                 {
                     //adds the textpanel to the list of directory pannels, technically redundant
                     FormatTextPanel(allTextPanels[j]);
                                              //"*******************************************"
-                    allTextPanels[j].WriteText("CARGO CONTAINER SORTING\n" +
+                    allTextPanels[j].WriteText("CARGO SORTING DIRECTORY\n" +
                                                "For any container to interact with the\n" +
                                                "script the custom data field must be set \n" +
                                                "properly.  It is not case sensitive\n" +
@@ -80,10 +80,10 @@
                                                "refer to Cargo Display\n"
                                                );
                 }
-                if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargodirectory"))
+                if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargodisplaydirectory"))
                 {
                     FormatTextPanel(allTextPanels[j]);
-                    allTextPanels[j].WriteText("CARGO DIRECTORY\n" +
+                    allTextPanels[j].WriteText("CARGO DISPLAY DIRECTORY\n" +
                                                "To display the inventories of items the\n" +
                                                "first line in the Custom Data field must\n" +
                                                "be \"cargodisplay\"\n" +
