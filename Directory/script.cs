@@ -1,11 +1,4 @@
 ﻿
-
-//Reference length for general max length of a text line on an LCD
-//"*******************************************"
-
-//Initializing all needed variables as global variables
-
-
 //ALL TEXTPANELS
 List<IMyTextPanel> allTextPanels = new List<IMyTextPanel>();
 
