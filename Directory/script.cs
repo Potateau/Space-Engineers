@@ -51,7 +51,7 @@ public void DisplayDirectories()
                 "Requires related script to function\n" +
                 "Sorting Directory_WIP: \"sorting directory\"\n" +
                 "Display Power Levels_WIP: \"power directory\"\n" +
-                "Inventory Display: \"inventory directory\"\n" +
+                "Cargo Display: \"cargo directory\"\n" +
                 "Page 2: WIP\n" +
                 "Some displays contain more information than\n" +
                 "displayed on screen, show screen for more");
@@ -81,13 +81,13 @@ public void DisplayDirectories()
                                        "+ \"display\" example: ore display"
                                        );
         }
-        if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("inventorydirectory"))
+        if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargodirectory"))
         {
             FormatTextPanel(allTextPanels[j]);
-            allTextPanels[j].WriteText("INVENTORY DIRECTORY\n" +
+            allTextPanels[j].WriteText("CARGO DIRECTORY\n" +
                                        "To display the inventories of items the\n" +
                                        "first line in the Custom Data field must\n" +
-                                       "be \"inventorydisplay\"\n" +
+                                       "be \"cargodisplay\"\n" +
                                        "\n" +
                                        "Enter the items you want to see the\n" +
                                        "inventory of on the following lines\n" +
