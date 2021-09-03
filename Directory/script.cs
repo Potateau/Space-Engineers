@@ -40,10 +40,11 @@
                         "following to learn how to adjust the\n" +
                         "custom data of cargo containers for auto\n" +
                         "sorting, stock maintanance, and display\n" +
-                        "Requires related script to function\n" +
-                        "Sorting Directory: \"sorting directory\"\n" +
-                        "Display Power Levels_WIP: \"power directory\"\n" +
+                        "Requires related scripts to function\n" +
                         "Cargo Display: \"cargo directory\"\n" +
+                        "Sorting Directory: \"sorting directory\"\n" +
+                        "Assembly Directory_WIP: \"assembly directory\"\n" +
+                        "Power Level Display_WIP: \"power directory\"\n" +
                         "Page 2: WIP\n" +
                         "Some displays contain more information than\n" +
                         "displayed on screen, show screen for more");
