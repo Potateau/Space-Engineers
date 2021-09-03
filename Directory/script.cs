@@ -51,35 +51,7 @@
                 }
 
 
-                //checks if the text panel custom data contains the term sorting directory
-                if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargosortingdirectory"))
-                {
-                    //adds the textpanel to the list of directory pannels, technically redundant
-                    FormatTextPanel(allTextPanels[j]);
-                                             //"*******************************************"
-                    allTextPanels[j].WriteText("CARGO SORTING DIRECTORY\n" +
-                                               "For any container to interact with the\n" +
-                                               "script the custom data field must be set \n" +
-                                               "properly.  It is not case sensitive\n" +
-                                               "\n" +
-                                               "Containers are only sorted within a grid\n" +
-                                               "\n" +
-                                               "Ore Storage => ore\n" +
-                                               "Ingot Storage => ingot\n" +
-                                               "Component Storage => component\n" +
-                                               "Ammo Storage => ammo\n" +
-                                               "Tool Storage => tool\n" +
-                                               "Miscelaneous Storage => misc\n" +
-                                               "\n" +
-                                               "Hydrogen and Oxygen Bottles are not sorted\n" +
-                                               "\n" +
-                                               "Items move as a stack and only if space\n" +
-                                               "for the whole stack is availabe\n" +
-                                               "\n" +
-                                               "To display inventories on LCD screens\n" +
-                                               "refer to Cargo Display\n"
-                                               );
-                }
+                
                 if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargodisplaydirectory"))
                 {
                     FormatTextPanel(allTextPanels[j]);
@@ -110,6 +82,35 @@
                                                "hydrogen tank count/\n" +
                                                "and the same for Oxygen are the filename\n" +
                                                "equivalents for use.\n"
+                                               );
+                }
+                    //checks if the text panel custom data contains the term sorting directory
+                if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargosortingdirectory"))
+                {
+                    //adds the textpanel to the list of directory pannels, technically redundant
+                    FormatTextPanel(allTextPanels[j]);
+                                             //"*******************************************"
+                    allTextPanels[j].WriteText("CARGO SORTING DIRECTORY\n" +
+                                               "For any container to interact with the\n" +
+                                               "script the custom data field must be set \n" +
+                                               "properly.  It is not case sensitive\n" +
+                                               "\n" +
+                                               "Containers are only sorted within a grid\n" +
+                                               "\n" +
+                                               "Ore Storage => ore\n" +
+                                               "Ingot Storage => ingot\n" +
+                                               "Component Storage => component\n" +
+                                               "Ammo Storage => ammo\n" +
+                                               "Tool Storage => tool\n" +
+                                               "Miscelaneous Storage => misc\n" +
+                                               "\n" +
+                                               "Hydrogen and Oxygen Bottles are not sorted\n" +
+                                               "\n" +
+                                               "Items move as a stack and only if space\n" +
+                                               "for the whole stack is availabe\n" +
+                                               "\n" +
+                                               "To display inventories on LCD screens\n" +
+                                               "refer to Cargo Display\n"
                                                );
                 }
             }
