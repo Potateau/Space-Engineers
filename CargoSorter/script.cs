@@ -113,8 +113,6 @@
         //methods supporting other methods or those that have specific purposes, more general use
         public bool MoveToCorrectCargoContainer(MyInventoryItem tempItem)
         {
-            //temp variable to check if a correct container was found
-            bool containerFound = false;
 
             for(int j = 0; j < allCargoContainers.Count; j++)
             {
