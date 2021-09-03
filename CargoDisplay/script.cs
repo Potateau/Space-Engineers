@@ -1,5 +1,5 @@
 
-// The cargo display portion of Cargo Sorter and Display V0.4
+
 
 //ALL CARGO CONTAINERS
 List<IMyCargoContainer> allCargoContainers = new List<IMyCargoContainer>();
