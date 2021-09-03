@@ -1,3 +1,6 @@
+        
+//Assemblers will automatically empty their inventory into an available cargo container
+//The script will sort the items from there
         //ALL CARGO CONTAINERS
         List<IMyCargoContainer> allCargoContainers = new List<IMyCargoContainer>();
 
