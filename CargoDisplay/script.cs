@@ -2,6 +2,15 @@
         List<IMyCargoContainer> allCargoContainers = new List<IMyCargoContainer>();
         //ALL GAS TANKS(OXYGEN AND HYDROGEN)
         List<IMyGasTank> allGasTanks = new List<IMyGasTank>();
+        //ALL TEXTPANELS
+        List<IMyTextPanel> allTextPanels = new List<IMyTextPanel>();
+        //ALL ASSEMBLERS
+        List<IMyAssembler> allAssemblers = new List<IMyAssembler>();
+        //All REFINERIES
+        List<IMyRefinery> allRefineries = new List<IMyRefinery>();
+
+
+
         double hydrogenCapacity;
         double hydrogenStorage;
         int hydrogenTankCount;
@@ -9,8 +18,7 @@
         double oxygenStorage;
         int oxygenTankCount;
 
-        //ALL TEXTPANELS
-        List<IMyTextPanel> allTextPanels = new List<IMyTextPanel>();
+        double numberOfItems;
 
         public Program()
         {
@@ -21,34 +29,84 @@
         public void Main(string argument, UpdateType updateSource)
         {
 
-            //clearing the contents to make sure new list is created and getting all the cargo containers of the same grid as the programmable block
-            allCargoContainers.Clear();
-            GridTerminalSystem.GetBlocksOfType<IMyCargoContainer>(allCargoContainers, b => b.CubeGrid == Me.CubeGrid);
+            CreateCargoContainerList();
+            CreateGasTankList();
+            CreateTextPanelList();
 
-            //clearing and getting all the gas containers on the ship
-            allGasTanks.Clear();
-            GridTerminalSystem.GetBlocksOfType<IMyGasTank>(allGasTanks, b => b.CubeGrid == Me.CubeGrid);
+            GetGasInventory();
 
-            //clearing the contents to make sure new list is created and getting all the text panels of the same grid as the programmable block
-            allTextPanels.Clear();
-            GridTerminalSystem.GetBlocksOfType<IMyTextPanel>(allTextPanels, b => b.CubeGrid == Me.CubeGrid);
-            //displaying the inventories on the text panels with the correct custom data fields
+            CreateAssemblerList();
+            CreateRefineryList();
+
+            //Assembly is contained within
             CargoDisplay();
-        }
 
-        //methods called directly by the main program
-        
+
+
+        }
+        public void CreateCargoContainerList()
+        {
+            //clearing the list
+            allCargoContainers.Clear();
+            //creating the list
+            GridTerminalSystem.GetBlocksOfType<IMyCargoContainer>(allCargoContainers, b => b.CubeGrid == Me.CubeGrid);
+        }
+        public void CreateGasTankList()
+        {
+            //clearing the list
+            allGasTanks.Clear();
+            //creating the list
+            GridTerminalSystem.GetBlocksOfType<IMyGasTank>(allGasTanks, b => b.CubeGrid == Me.CubeGrid);
+        }
+        public void CreateTextPanelList()
+        {
+            //clearing the list
+            allTextPanels.Clear();
+            //creating the list
+            GridTerminalSystem.GetBlocksOfType<IMyTextPanel>(allTextPanels, b => b.CubeGrid == Me.CubeGrid);
+        }
+        public void GetGasInventory()
+        {
+            //clearing capacities for new run of script
+
+            hydrogenCapacity = 0;
+            hydrogenStorage = 0;
+            hydrogenTankCount = 0;
+            oxygenCapacity = 0;
+            oxygenStorage = 0;
+            oxygenTankCount = 0;
+
+            //get the total possible volume of hydrogen and oxygen on the ship
+            for (int i = 0; i < allGasTanks.Count(); i++)
+            {
+
+                //checking if the gas tank is hydrogen
+                if (allGasTanks[i].BlockDefinition.SubtypeId.Contains("Hydro") && allGasTanks[i].IsFunctional)
+                {
+                    hydrogenCapacity += allGasTanks[i].Capacity;
+                    hydrogenStorage += allGasTanks[i].FilledRatio * allGasTanks[i].Capacity;
+                    hydrogenTankCount++;
+
+                }
+                //not hydrogen so it is oxygen
+                else if (allGasTanks[i].IsFunctional)
+                {
+                    oxygenCapacity += allGasTanks[i].Capacity;
+                    oxygenStorage += allGasTanks[i].FilledRatio * allGasTanks[i].Capacity;
+                    oxygenTankCount++;
+                }
+
+
+
+
+            }
+
+
+        }
         public void CargoDisplay()
         {
             //method to display all the ores, ingots, components, ammo, hydrogen, oxygen, and other things in the cargo containers
 
-
-            //clearing the list of TextPanels to make sure it is empty from previous runs
-            allTextPanels.Clear();
-            //adding all TextPanels accessable to the prgramable block to the list of TextPanels
-            GridTerminalSystem.GetBlocksOfType<IMyTextPanel>(allTextPanels, b => b.CubeGrid == Me.CubeGrid);
-            //getting the capacity and storage levels of all the gas(hydrogen and oxygen) on the grid
-            GetGasInventory();
 
             //string of the text panel's custom data
             string[] displayRequests;
@@ -56,11 +114,6 @@
             displayRequests = null;
 
             string itemCategory = null;
-
-            //variable for alternate display
-            //int stringLength;
-            //string tempString = null;
-            //string tempStringPad = null;
 
             //"*******************************************"
             string inventoryDisplay;
@@ -116,30 +169,27 @@
                                 itemCategory = "component tool or ammo";
                             }
 
-                            /*alternate display type that works better with monospace
-                                    //finding the length of the text line that will be added to the display
-                                    tempString = displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + "." + GetNumberOfItems(allCargoContainers, displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), itemCategory);
-                                    stringLength = tempString.Length;
-                                    //adding the first part of the text line, the name of the item
-                                    inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1);
-                                    //adding . so all the lines of text are aligned the same
-                                    tempStringPad = ".";
-                                    //custom padding loop since .PadLeft or .PadRight was not working
-                                    for(int i = 0;i+stringLength<30; i++)
-                                    {
-                                        tempStringPad = tempStringPad + ".";
-                                    }
-
-
-                                    //putting the number of items onto the text line
-                                    inventoryDisplay = inventoryDisplay +tempStringPad + (GetNumberOfItems(allCargoContainers, displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), itemCategory) + "\n");
-                                    */
-                            //there is nothing on that line so add a linebreak to the display
 
                             //adding to the display if it is an item and not a gas type
                             if (itemCategory != "hydrogen" && itemCategory != "oxygen")
                             {
-                                inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(GetNumberOfItems(allCargoContainers, displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), itemCategory)) + "\n";
+                                numberOfItems = GetNumberOfItems(allCargoContainers, allAssemblers, allRefineries, displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), itemCategory);
+                                //The line is requesting a production goal so use the = sign to find the display name and display the production goal
+                                if (displayRequests[n].IndexOf("=") > 0)
+                                {
+                                    inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].IndexOf("=") - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(numberOfItems);
+                                    inventoryDisplay = inventoryDisplay + "/" + FormatNumber(Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1))) + "\n";
+
+                                }
+                                //No production goal so use the line length to find the display name and don't display any production goal
+                                else
+                                {
+                                    inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(numberOfItems) + "\n";
+                                }
+
+
+
+
                             }
                             else //it is requesting a gas type
                             {
@@ -191,83 +241,110 @@
 
 
         }
-
-        public void GetGasInventory()
+        public void CreateAssemblerList()
         {
-            //clearing capacities for new run of script
-
-            hydrogenCapacity = 0;
-            hydrogenStorage = 0;
-            hydrogenTankCount = 0;
-            oxygenCapacity = 0;
-            oxygenStorage = 0;
-            oxygenTankCount = 0;
-
-            //get the total possible volume of hydrogen and oxygen on the ship
-            for (int i = 0; i < allGasTanks.Count(); i++)
-            {
-
-                //checking if the gas tank is hydrogen
-                if (allGasTanks[i].BlockDefinition.SubtypeId.Contains("Hydro") && allGasTanks[i].IsFunctional)
-                {
-                    hydrogenCapacity += allGasTanks[i].Capacity;
-                    hydrogenStorage += allGasTanks[i].FilledRatio * allGasTanks[i].Capacity;
-                    hydrogenTankCount++;
-
-                }
-                //not hydrogen so it is oxygen
-                else if (allGasTanks[i].IsFunctional)
-                {
-                    oxygenCapacity += allGasTanks[i].Capacity;
-                    oxygenStorage += allGasTanks[i].FilledRatio * allGasTanks[i].Capacity;
-                    oxygenTankCount++;
-                }
-
-
-
-
-            }
-
-
+            //clearing the list
+            allAssemblers.Clear();
+            //creating the assembler list
+            GridTerminalSystem.GetBlocksOfType<IMyAssembler>(allAssemblers, b => b.CubeGrid == Me.CubeGrid);
         }
-
-        public double GetNumberOfItems(List<IMyCargoContainer> cargoContainers, string item, string itemCategory)
+        public void CreateRefineryList()
         {
-            //initializing the number of steel plates found
+            //clearing the list
+            allRefineries.Clear();
+            //creating the refinery list
+            GridTerminalSystem.GetBlocksOfType<IMyRefinery>(allRefineries, b => b.CubeGrid == Me.CubeGrid);
+        }
+        public double GetNumberOfItems(List<IMyCargoContainer> cargoContainers, List<IMyAssembler> assemblers, List<IMyRefinery> refineries, string subtypeId, string itemCategory)
+        {
+            //initializing the number of items found
             MyFixedPoint temp = 0;
-
-
-
 
             //checking all the cargo containers sent for the number of items found within
             for (int j = 0; j < cargoContainers.Count; j++)
             {
+                //finds the number of the type of item and stores the type of item into the global variable
                 switch (itemCategory)
                 {
                     case "ore":
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeOre(item));
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeOre(subtypeId));
                         break;
                     case "ingot":
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeIngot(item));
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeIngot(subtypeId));
+
                         break;
+                    //names do not overlap so they result in 0 if the item name does not match   
                     case "component tool or ammo":
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeComponent(item));
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeTool(item));
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeAmmo(item));
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeComponent(subtypeId));
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeTool(subtypeId));
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+
                         break;
                 }
-
-
-
-
-
-
-
             }
+
+
+
+            //checking all the assemblers sent for the number of items found within
+            for (int k = 0; k < assemblers.Count; k++)
+            {
+
+
+                //finds the number of the type of item and stores the type of item into the global variable
+                switch (itemCategory)
+                {
+                    case "ore":
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        break;
+                    case "ingot":
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeIngot(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeIngot(subtypeId));
+                        break;
+                    //names do not overlap so they result in 0 if the item name does not match   
+                    case "component tool or ammo":
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeComponent(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeComponent(subtypeId));
+
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeTool(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeTool(subtypeId));
+
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+                        break;
+                }
+            }
+            //checking all the refineries sent for the number of items found within
+            for (int l = 0; l < refineries.Count; l++)
+            {
+                //finds the number of the type of item and stores the type of item into the global variable
+                switch (itemCategory)
+                {
+                    case "ore":
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        break;
+                    case "ingot":
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeIngot(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeIngot(subtypeId));
+                        break;
+                    //names do not overlap so they result in 0 if the item name does not match   
+                    case "component tool or ammo":
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeComponent(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeComponent(subtypeId));
+
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeTool(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeTool(subtypeId));
+
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+                        break;
+                }
+            }
+
             int forReturn = temp.ToIntSafe();
             return forReturn;
         }
-
         public void FormatTextPanel(IMyTextPanel textPanel)
         {
             textPanel.FontSize = 1f;
@@ -336,3 +413,27 @@
 
             return formattedNumber;
         }
+
+        public MyDefinitionId StringToMyDefinitionId(String subtypeId)
+        {
+            //game requires things to be hard coded so this is a series of if statements of supported blueprints to send to assemblers
+            MyDefinitionId blueprint;
+            MyItemType itemType;
+            itemType = MyItemType.MakeComponent(subtypeId);
+            if (subtypeId == "SteelPlate")
+            {
+                blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/SteelPlate");
+            }
+            else if (subtypeId == "LargeTube")
+            {
+                blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/LargeTube");
+            }
+            else
+            {
+                blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/none");
+            }
+
+            return blueprint;
+        }
+
+        
