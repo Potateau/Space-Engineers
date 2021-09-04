@@ -183,7 +183,7 @@
                                     if (Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1)) > numberOfItems)
                                     {
                                         //send the difference to the assemblers to check if the required items are in queue, otherwise create item queue
-                                        Assembly(displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""),Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1)) - numberOfItems);
+                                        Assembly(displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""));
                                     }
                                 }
                                 //No production goal so use the line length to find the display name and don't display any production goal
@@ -260,11 +260,11 @@
             //creating the refinery list
             GridTerminalSystem.GetBlocksOfType<IMyRefinery>(allRefineries, b => b.CubeGrid == Me.CubeGrid);
         }
-        public void Assembly(string filename, double itemsMissingFromCargoInventory)
+        public void Assembly(string filename)
         {
             MyDefinitionId blueprint;
             List<MyProductionItem> allProductionItems = new List<MyProductionItem>();
-
+            MyFixedPoint count = 10;
 
 
             for (int i = 0; i < allAssemblers.Count(); i++)
@@ -284,7 +284,7 @@
                         if (allAssemblers[i].CanUseBlueprint(blueprint))
                         {
                             //number of missing items will be added to the production queue
-                            allAssemblers[i].AddQueueItem(blueprint, (MyFixedPoint)itemsMissingFromCargoInventory);
+                            allAssemblers[i].AddQueueItem(blueprint, count);
                             //the item has been sent to an assembler so break the loop to make sure it doesn't get assigned to every idle assembler
                             break;
                         }
@@ -321,25 +321,35 @@
                         break;
                 }
             }
+
+           
+
             //checking all the assemblers sent for the number of items found within
             for (int k = 0; k < assemblers.Count; k++)
             {
+
+                
                 //finds the number of the type of item and stores the type of item into the global variable
                 switch (itemCategory)
                 {
                     case "ore":
-                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeOre(subtypeId));
                         break;
                     case "ingot":
-                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeIngot(subtypeId));
-
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeIngot(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeIngot(subtypeId));
                         break;
                     //names do not overlap so they result in 0 if the item name does not match   
                     case "component tool or ammo":
-                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeComponent(subtypeId));
-                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeTool(subtypeId));
-                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeComponent(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeComponent(subtypeId));
 
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeTool(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeTool(subtypeId));
+
+                        temp += assemblers[k].InputInventory.GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+                        temp += assemblers[k].OutputInventory.GetItemAmount(MyItemType.MakeAmmo(subtypeId));
                         break;
                 }
             }
@@ -350,18 +360,23 @@
                 switch (itemCategory)
                 {
                     case "ore":
-                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeOre(subtypeId));
                         break;
                     case "ingot":
-                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeIngot(subtypeId));
-
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeIngot(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeIngot(subtypeId));
                         break;
                     //names do not overlap so they result in 0 if the item name does not match   
                     case "component tool or ammo":
-                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeComponent(subtypeId));
-                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeTool(subtypeId));
-                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeComponent(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeComponent(subtypeId));
 
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeTool(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeTool(subtypeId));
+
+                        temp += refineries[l].InputInventory.GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+                        temp += refineries[l].OutputInventory.GetItemAmount(MyItemType.MakeAmmo(subtypeId));
                         break;
                 }
             }
