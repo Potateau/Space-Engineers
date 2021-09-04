@@ -38,7 +38,6 @@
             CreateAssemblerList();
             CreateRefineryList();
 
-            //Assembly is contained within
             CargoDisplay();
 
 
