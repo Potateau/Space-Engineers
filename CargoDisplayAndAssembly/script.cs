@@ -6,8 +6,10 @@
         List<IMyTextPanel> allTextPanels = new List<IMyTextPanel>();
         //ALL ASSEMBLERS
         List<IMyAssembler> allAssemblers = new List<IMyAssembler>();
-        //CURRENT ASSEMBLER QUEUE
-        List<IMyInventoryItem> assemblerQueue = new List<IMyInventoryItem>();
+        //All REFINERIES
+        List<IMyRefinery> allRefineries = new List<IMyRefinery>();
+
+
 
         double hydrogenCapacity;
         double hydrogenStorage;
@@ -17,7 +19,6 @@
         int oxygenTankCount;
 
         double numberOfItems;
-        MyItemType itemType;
 
         public Program()
         {
@@ -34,11 +35,14 @@
 
             GetGasInventory();
 
-            CargoDisplay();
-
             CreateAssemblerList();
+            CreateRefineryList();
 
-            Assembly();
+            //Assembly is contained within
+            CargoDisplayAndAssembly();
+
+            
+
         }
         public void CreateCargoContainerList()
         {
@@ -99,7 +103,7 @@
 
 
         }
-        public void CargoDisplay()
+        public void CargoDisplayAndAssembly()
         {
             //method to display all the ores, ingots, components, ammo, hydrogen, oxygen, and other things in the cargo containers
             
@@ -111,11 +115,6 @@
 
             string itemCategory = null;
 
-            //variable for alternate display
-            //int stringLength;
-            //string tempString = null;
-            //string tempStringPad = null;
-
             //"*******************************************"
             string inventoryDisplay;
 
@@ -125,10 +124,10 @@
             {
                 //following if statements check the custom data field of the textpanel and display the categories that are called for
                 displayRequests = allTextPanels[k].CustomData.Split(new string[] { "\n" }, StringSplitOptions.None);
-                if (displayRequests[0].ToLower().Replace(" ", "") == "cargodisplay")
+                if (displayRequests[0].ToLower().Replace(" ", "") == "cargodisplayandassembly")
                 {
 
-                    inventoryDisplay = "GRID CARGO\n";
+                    inventoryDisplay = "GRID CARGO AND ASSEMBLY\n";
                     FormatTextPanel(allTextPanels[k]);
                     //add changing of background if necessary
 
@@ -174,12 +173,25 @@
                             //adding to the display if it is an item and not a gas type
                             if (itemCategory != "hydrogen" && itemCategory != "oxygen")
                             {
-                                numberOfItems = GetNumberOfItems(allCargoContainers, displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), itemCategory);
-                                inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].IndexOf("=") - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(numberOfItems);
+                                numberOfItems = GetNumberOfItems(allCargoContainers, allAssemblers, allRefineries, displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), itemCategory);
+                                //The line is requesting a production goal so use the = sign to find the display name and display the production goal
+                                if (displayRequests[n].IndexOf("=") > 0)
+                                {
+                                    inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].IndexOf("=") - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(numberOfItems);
+                                    inventoryDisplay = inventoryDisplay + "/" + FormatNumber(Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1))) + "\n";
+                                    //check if the number of items requested is more than the number of items stored
+                                    if (Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1)) > numberOfItems)
+                                    {
+                                        //send the difference to the assemblers to check if the required items are in queue, otherwise create item queue
+                                        Assembly(displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""),Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1)) - numberOfItems);
+                                    }
+                                }
+                                //No production goal so use the line length to find the display name and don't display any production goal
+                                else
+                                {
+                                    inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(numberOfItems)+"\n";
+                                }
 
-                                //the display and assembly request of items with a cargo goal
-                                
-                                inventoryDisplay = inventoryDisplay + "=>" + displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1)+"\n";
 
                                 
 
@@ -241,20 +253,51 @@
             //creating the assembler list
             GridTerminalSystem.GetBlocksOfType<IMyAssembler>(allAssemblers, b => b.CubeGrid == Me.CubeGrid);
         }
-        public void Assembly()
+        public void CreateRefineryList()
         {
+            //clearing the list
+            allRefineries.Clear();
+            //creating the refinery list
+            GridTerminalSystem.GetBlocksOfType<IMyRefinery>(allRefineries, b => b.CubeGrid == Me.CubeGrid);
+        }
+        public void Assembly(string filename, double itemsMissingFromCargoInventory)
+        {
+            MyDefinitionId blueprint;
+            List<MyProductionItem> allProductionItems = new List<MyProductionItem>();
+
+
+
             for (int i = 0; i < allAssemblers.Count(); i++)
             {
+                //puts the production queue of the assembler into allProductionItems
+                allAssemblers[i].GetQueue(allProductionItems);
+
+                //checks if the assembler has a queue and only assigns new items into production if the queue is empty
+                if (allProductionItems.Count == 0)
+                {
+                    //gets the blueprint of the filename, hardcoded functionality so updates may break this
+                    blueprint = StringToMyDefinitionId(filename);
+                    //only assigns work to assemblers that are not set to cooperative mode, recommended only one assembler not set to cooperative mode else the missing items will be entered into production multiple times
+                    if (!allAssemblers[i].CooperativeMode)
+                    {
+                        //ensures the assembler can accept the requested blueprint
+                        if (allAssemblers[i].CanUseBlueprint(blueprint))
+                        {
+                            //number of missing items will be added to the production queue
+                            allAssemblers[i].AddQueueItem(blueprint, (MyFixedPoint)itemsMissingFromCargoInventory);
+                            //the item has been sent to an assembler so break the loop to make sure it doesn't get assigned to every idle assembler
+                            break;
+                        }
+                    }
+                }
+                
 
             }
         }
-        public double GetNumberOfItems(List<IMyCargoContainer> cargoContainers, string item, string itemCategory)
+        public double GetNumberOfItems(List<IMyCargoContainer> cargoContainers, List<IMyAssembler> assemblers, List<IMyRefinery> refineries, string subtypeId, string itemCategory)
         {
-            //initializing the number of steel plates found
+            //initializing the number of items found
             MyFixedPoint temp = 0;
-
-
-
 
             //checking all the cargo containers sent for the number of items found within
             for (int j = 0; j < cargoContainers.Count; j++)
@@ -263,31 +306,66 @@
                 switch (itemCategory)
                 {
                     case "ore":
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeOre(item));
-                        itemType = MyItemType.MakeOre(item);
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeOre(subtypeId));
                         break;
                     case "ingot":
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeIngot(item));
-                        itemType = MyItemType.MakeIngot(item);
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeIngot(subtypeId));
+
                         break;
                     //names do not overlap so they result in 0 if the item name does not match   
                     case "component tool or ammo":
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeComponent(item));
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeTool(item));
-                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeAmmo(item));
-                        itemType = MyItemType.MakeComponent(item);
-                        itemType = MyItemType.MakeTool(item);
-                        itemType = MyItemType.MakeAmmo(item);
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeComponent(subtypeId));
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeTool(subtypeId));
+                        temp += cargoContainers[j].GetInventory(0).GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+
                         break;
                 }
-
-
-
-
-
-
-
             }
+            //checking all the assemblers sent for the number of items found within
+            for (int k = 0; k < assemblers.Count; k++)
+            {
+                //finds the number of the type of item and stores the type of item into the global variable
+                switch (itemCategory)
+                {
+                    case "ore":
+                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        break;
+                    case "ingot":
+                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeIngot(subtypeId));
+
+                        break;
+                    //names do not overlap so they result in 0 if the item name does not match   
+                    case "component tool or ammo":
+                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeComponent(subtypeId));
+                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeTool(subtypeId));
+                        temp += assemblers[k].GetInventory(0).GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+
+                        break;
+                }
+            }
+            //checking all the refineries sent for the number of items found within
+            for (int l = 0; l < refineries.Count; l++)
+            {
+                //finds the number of the type of item and stores the type of item into the global variable
+                switch (itemCategory)
+                {
+                    case "ore":
+                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeOre(subtypeId));
+                        break;
+                    case "ingot":
+                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeIngot(subtypeId));
+
+                        break;
+                    //names do not overlap so they result in 0 if the item name does not match   
+                    case "component tool or ammo":
+                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeComponent(subtypeId));
+                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeTool(subtypeId));
+                        temp += refineries[l].GetInventory(0).GetItemAmount(MyItemType.MakeAmmo(subtypeId));
+
+                        break;
+                }
+            }
+
             int forReturn = temp.ToIntSafe();
             return forReturn;
         }
@@ -358,6 +436,28 @@
 
 
             return formattedNumber;
+        }
+
+        public MyDefinitionId StringToMyDefinitionId(String subtypeId)
+        {
+            //game requires things to be hard coded so this is a series of if statements of supported blueprints to send to assemblers
+            MyDefinitionId blueprint;
+            MyItemType itemType;
+            itemType = MyItemType.MakeComponent(subtypeId);
+            if (subtypeId == "SteelPlate")
+            {
+                blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/SteelPlate");
+            }
+            else if (subtypeId == "LargeTube")
+            {
+                blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/LargeTube");
+            }
+            else
+            {
+                blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/none");
+            }
+            
+            return blueprint;
         }
 
 
