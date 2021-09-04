@@ -62,7 +62,7 @@
                                                "\n" +
                                                "Enter the items you want to see the\n" +
                                                "inventory of on the following lines\n" +
-                                               "as filename/displayname\n" +
+                                               "as subtypeId/displayname\n" +
                                                "Examples: \"Steel Plate/Steel Plate\"\n" +
                                                "and \"Large Tube/Large Steel Tubes\"\n" +
                                                "\"line break\" to get a line break" +
@@ -74,13 +74,13 @@
                                                "\n" +
                                                "Ores and Ingots cause an issue since they\n" +
                                                "share the same name. Include Ore or Ingot\n" +
-                                               "in the filename to distinguish.\n" +
+                                               "in the subtypeId to distinguish.\n" +
                                                "\n" +
                                                "Hydrogen and Oxygen displays are custom\n" +
                                                "hydrogen storage/\n" +
                                                "hydrogen capacity/\n" +
                                                "hydrogen tank count/\n" +
-                                               "and the same for Oxygen are the filename\n" +
+                                               "and the same for Oxygen are the subtypeId\n" +
                                                "equivalents for use.\n"
                                                );
                 }
