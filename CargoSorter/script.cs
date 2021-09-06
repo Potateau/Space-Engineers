@@ -10,6 +10,8 @@ List<IMyGasGenerator> allO2H2Generators = new List<IMyGasGenerator>();
 //temporary inventory
 IMyInventory tempInventory;
 
+MyFixedPoint bottleVolume = (MyFixedPoint)0.120;
+
 public Program()
 {
     Runtime.UpdateFrequency = UpdateFrequency.Update100;
@@ -169,7 +171,7 @@ public void SortContainers()
             //we always want to empty out the bottles from the inventories and keep at least one slot open
             //checking to make sure that there is volume available in the generator for a bottle and if not trying to take an item out and put it in the correct container
             //this would be relevant if filled with ice but no need to produce hydrogen or oxygen so the bottles never get refilled and player doesn't have tanks
-            if(allO2H2Generators[j].GetInventory(0).CurrentVolume>allO2H2Generators[j].GetInventory(0).MaxVolume-120)
+            if(allO2H2Generators[j].GetInventory(0).CurrentVolume>allO2H2Generators[j].GetInventory(0).MaxVolume-bottleVolume)
             {
                 MoveToCorrectCargoContainer(tempItem);
             }
