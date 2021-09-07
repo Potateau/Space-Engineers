@@ -13,7 +13,6 @@ List<IMyGasTank> allGasTanks = new List<IMyGasTank>();
 IMyInventory tempInventory;
 
 MyFixedPoint bottleVolume = (MyFixedPoint)0.120;
-MyFixedPoint amountToMove = (MyFixedPoint)10;
 
 
 public Program()
