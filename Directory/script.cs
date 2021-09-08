@@ -39,7 +39,7 @@ public void DisplayDirectories()
                                        "Display and Assembly:\n" +
                                        "\"assembly directory\"\n" +
                                        "Sorting: \"cargo sorting directory\"\n" +
-                                       "Space Arm_WIP: \"space arm directory\"\n" +
+                                       "Space Arm: \"space arm directory\"\n" +
                                        "Displays contain more information if\n" +
                                        "you open the screen text");
         }
@@ -51,6 +51,7 @@ public void DisplayDirectories()
                                        "To display the inventories of items the\n" +
                                        "first line in the Custom Data field must\n" +
                                        "be \"cargodisplay\"\n" +
+                                       
                                        "\n" +
                                        "Enter the items you want to see the\n" +
                                        "inventory of on the following lines\n" +
@@ -74,9 +75,9 @@ public void DisplayDirectories()
                                        "hydrogen capacity/\n" +
                                        "hydrogen tank count/\n" +
                                        "and the same for Oxygen as the subtypeId\n" +
-                                       "equivalents for use.\n"
+                                       "equivalents for use.\n"+
                                      //"*******************************************"
-                                       "\n"
+                                       "\n"+
                                        "Production goals can be displayed by using\n"+
                                        "a \"=\"\n" +
                                        "Example:\n" +
@@ -87,8 +88,8 @@ public void DisplayDirectories()
                                        "\n" +
                                        "You may also refer to my list I made found\n" +
                                        "here: https://github.com/Potateau/Space-Engineers/wiki/SubtypeId-Reference\n" +
-                                       "for subtypeId.\n"
-                                       );
+                                       "for subtypeId.\n"+
+                                       "");
         }
         //checks if the text panel custom data contains the term for cargo display and assembly directory
         if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargodisplayandassemblydirectory")
@@ -98,7 +99,7 @@ public void DisplayDirectories()
                                      //"*******************************************"
                                        "To display the inventories of items and\n"+
                                        "control stock of those items the first line\n"+
-                                       "in the Custom Data field must be\n"
+                                       "in the Custom Data field must be\n"+
                                        "\"cargodisplayandassembly\"\n"+
                                        
                                        "\n"+
@@ -130,20 +131,21 @@ public void DisplayDirectories()
                                        "hydrogen capacity/\n" +
                                        "hydrogen tank count/\n" +
                                        "and the same for Oxygen as the subtypeId\n" +
-                                       "equivalents for use.\n"
+                                       "equivalents for use.\n"+
                                      //"*******************************************"
                                        "\n"+
                                        "Production goals do not need to be set to\n"+
-                                       "display inventory.  Simply do not enter the\n"
+                                       "display inventory.  Simply do not enter the\n"+
                                        "= sign or write a number on the line to\n"+
-                                       "only use the display functionality.\n"
+                                       "only use the display functionality.\n"+
                                        
-                                       "\n"
+                                       "\n"+
                                        "You may also refer to my list I made found\n" +
                                        "here: https://github.com/Potateau/Space-Engineers/wiki/SubtypeId-Reference\n" +
-                                       "for subtypeId.\n"
+                                       "for subtypeId.\n"+
+                                       "");
         }
-            //checks if the text panel custom data contains the term sorting directory
+        //checks if the text panel custom data contains the term for the sorting directory
         if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargosortingdirectory"))
         {
             FormatTextPanel(allTextPanels[j]);
@@ -177,13 +179,47 @@ public void DisplayDirectories()
                                        "Assembler and Refinery output inventories\n"+
                                        "are automatically emptied into cargo\n"+
                                        "containers if there are assigned cargo\n"+
-                                       "containers available.\n"
+                                       "containers available.\n"+
                                        
                                        "\n" +
                                        "To display inventories on LCD screens\n" +
-                                       "refer to Cargo Display\n"
-                                       );
+                                       "refer to Cargo Display\n"+
+                                       "");
         }
+        //checks if the text panel custom data contains the term for the space arm directory
+        if(allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("spacearmdirectory")
+        {
+            FormatTextPanel(allTextPanels[j]);
+                                     //"*******************************************"
+            allTextPanels[j].WriteText("SPACE ARM DIRECTORY\n"+
+                                       "All space arms require a dedicated cockpit.\n"+
+                                       "Cockpit custom data field must be set to\n"+
+                                       "\"spacearm name\" where \"name\" is custom and\n"+
+                                       "unique.\n"+
+                                       
+                                       "\n"+
+                                       "Pistons must contain the associated\n"+
+                                       "\"spacearm name\" as the control cockpit.\n"+
+                                       "Following line needs \"vertical\", \"lateral\",\n"+
+                                       "or \"longitudinal\" to move."+
+                                       "Enter \"-1\" on another line to reverse\n"+
+                                       "piston movement."+
+                                     //"*******************************************"
+                                       "\n"+
+                                       "Rotors and hinges must contain the\n"+
+                                       "associated \"spacearm name\" as the control\n"+
+                                       "cockpit.  Following line needs \"pitch\"\n"+
+                                       "\"yaw\", or \"roll\" to move."+
+                                       "Enter \"-1\" on another line to reverse\n"+
+                                       "rotor and hinge movement."+
+                                       
+                                       "\n"+
+                                       "Cockpit, pistons, rotors, and hinges will\n"+
+                                       "all have \"spacearm name\" from the\n"+
+                                       "cockpit's custom data field added to their\n"+
+                                       "name.\n"+
+                                       "");
+            
     }
 }
 public void FormatTextPanel(IMyTextPanel textPanel)
