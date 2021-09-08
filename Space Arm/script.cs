@@ -3,8 +3,6 @@ public Program()
     //runtime needs to be as frequent as possible else delay in inputs
     Runtime.UpdateFrequency = UpdateFrequency.Update1;
 }
-
-
 public void Main(string argument, UpdateType updateSource)
 {
     //Vertical Axis => Y
@@ -50,7 +48,6 @@ public void Main(string argument, UpdateType updateSource)
                     MovePistons(allCockpits[i],allPistonBases[j]);
                 }
             }
-
             //for all hinges and rotors   
             for (int k = 0; k < allHingesAndRotors.Count; k++)
             {
@@ -90,6 +87,7 @@ public void DisableCockpitFromControllingShip(IMyCockpit cockpit_InFunction)
     cockpit_InFunction.ControlThrusters = false;
     cockpit_InFunction.ControlWheels = false;
     cockpit_InFunction.IsMainCockpit = false;
+    cockpit_InFunction.SetValueBool("ControlGyros", false);
 }
 public void MovePistons(IMyCockpit cockpit_InFunction,IMyPistonBase pistonBase_InFunction)
 {
