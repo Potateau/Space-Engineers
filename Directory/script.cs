@@ -214,6 +214,12 @@ public void DisplayDirectories()
                                        "rotor and hinge movement."+
                                        
                                        "\n"+
+                                       "Enter the sensitivity factor into the run\n"+
+                                       "argument of the programmable block.  It\n"+
+                                       "takes any number.  The pistons and rotors\n"+
+                                       "use the same sensitivity factor.\n"+
+                                       
+                                       "\n"+
                                        "Cockpit, pistons, rotors, and hinges will\n"+
                                        "all have \"spacearm name\" from the\n"+
                                        "cockpit's custom data field added to their\n"+
