@@ -395,13 +395,24 @@ public void FormatTextPanel(IMyTextPanel textPanel)
 public string FormatNumber(double number)
 {
     string originalNumber = null;
+    string truncatedNumber = null;
     string formattedNumber = null;
     int numberOfCommas = 0;
 
     originalNumber = number.ToString();
 
     //number is less than 10,000 so display full number
-    if (originalNumber.Length < 5)
+
+    if (originalNumber.Contains("."))
+    {
+        truncatedNumber = originalNumber.Substring(0, originalNumber.IndexOf(".") - 1);
+    }
+    else
+    {
+        truncatedNumber = originalNumber;
+    }
+
+    if (truncatedNumber.Length < 5)
     {
         for (int i = 0; i < originalNumber.Length + numberOfCommas; i++)
         {
@@ -418,27 +429,27 @@ public string FormatNumber(double number)
         }
     }
     //number is less than 100,000 but >= 10,000 display as ##.#k
-    else if (originalNumber.Length < 6)
+    else if (truncatedNumber.Length < 6)
     {
         formattedNumber = originalNumber.Substring(0, 2) + "." + originalNumber.Substring(2, 2) + "k";
     }
     //number is less than 1,000,000 but >= 100,000 display as ###.#k
-    else if (originalNumber.Length < 7)
+    else if (truncatedNumber.Length < 7)
     {
         formattedNumber = originalNumber.Substring(0, 3) + "." + originalNumber.Substring(3, 1) + "k";
     }
     //number is less than 10,000,000 but >= 1,000,000 display as #.###M
-    else if (originalNumber.Length < 8)
+    else if (truncatedNumber.Length < 8)
     {
         formattedNumber = originalNumber.Substring(0, 1) + "." + originalNumber.Substring(1, 3) + "M";
     }
     //number is less than 100,000,000 but >= 10,000,000 display as ##.##M
-    else if (originalNumber.Length < 9)
+    else if (truncatedNumber.Length < 9)
     {
         formattedNumber = originalNumber.Substring(0, 2) + "." + originalNumber.Substring(2, 2) + "M";
     }
     //number is less than 1,000,000,000 but >= 1,000,000 display as ###m
-    else if (originalNumber.Length < 10)
+    else if (truncatedNumber.Length < 10)
     {
         formattedNumber = originalNumber.Substring(0, 3) + "." + originalNumber.Substring(3, 1) + "M";
     }
