@@ -402,7 +402,6 @@ public string FormatNumber(double number)
     originalNumber = number.ToString();
 
     //number is less than 10,000 so display full number
-
     if (originalNumber.Contains("."))
     {
         truncatedNumber = originalNumber.Substring(0, originalNumber.IndexOf(".") - 1);
@@ -414,7 +413,7 @@ public string FormatNumber(double number)
 
     if (truncatedNumber.Length < 5)
     {
-        for (int i = 0; i < originalNumber.Length + numberOfCommas; i++)
+        for (int i = 0; i < truncatedNumber.Length + numberOfCommas; i++)
         {
             //4th iteration so a comma should be used
             if (i == 3)
@@ -424,43 +423,40 @@ public string FormatNumber(double number)
             }
             else
             {
-                formattedNumber = originalNumber.Substring(originalNumber.Length - i - 1 + numberOfCommas, 1) + formattedNumber;
+                formattedNumber = truncatedNumber.Substring(truncatedNumber.Length - i - 1 + numberOfCommas, 1) + formattedNumber;
             }
         }
     }
     //number is less than 100,000 but >= 10,000 display as ##.#k
     else if (truncatedNumber.Length < 6)
     {
-        formattedNumber = originalNumber.Substring(0, 2) + "." + originalNumber.Substring(2, 2) + "k";
+        formattedNumber = truncatedNumber.Substring(0, 2) + "." + truncatedNumber.Substring(2, 2) + "k";
     }
     //number is less than 1,000,000 but >= 100,000 display as ###.#k
     else if (truncatedNumber.Length < 7)
     {
-        formattedNumber = originalNumber.Substring(0, 3) + "." + originalNumber.Substring(3, 1) + "k";
+        formattedNumber = truncatedNumber.Substring(0, 3) + "." + truncatedNumber.Substring(3, 1) + "k";
     }
     //number is less than 10,000,000 but >= 1,000,000 display as #.###M
     else if (truncatedNumber.Length < 8)
     {
-        formattedNumber = originalNumber.Substring(0, 1) + "." + originalNumber.Substring(1, 3) + "M";
+        formattedNumber = truncatedNumber.Substring(0, 1) + "." + truncatedNumber.Substring(1, 3) + "M";
     }
     //number is less than 100,000,000 but >= 10,000,000 display as ##.##M
     else if (truncatedNumber.Length < 9)
     {
-        formattedNumber = originalNumber.Substring(0, 2) + "." + originalNumber.Substring(2, 2) + "M";
+        formattedNumber = truncatedNumber.Substring(0, 2) + "." + truncatedNumber.Substring(2, 2) + "M";
     }
     //number is less than 1,000,000,000 but >= 1,000,000 display as ###m
     else if (truncatedNumber.Length < 10)
     {
-        formattedNumber = originalNumber.Substring(0, 3) + "." + originalNumber.Substring(3, 1) + "M";
+        formattedNumber = truncatedNumber.Substring(0, 3) + "." + truncatedNumber.Substring(3, 1) + "M";
     }
     //number is at least a billion
     else
     {
         formattedNumber = "> 1B";
     }
-
-
-
     return formattedNumber;
 }
 
