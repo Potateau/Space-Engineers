@@ -1,153 +1,146 @@
-//ALL CARGO CONTAINERS
-List<IMyCargoContainer> allCargoContainers = new List<IMyCargoContainer>();
-//ALL GAS TANKS(OXYGEN AND HYDROGEN)
-List<IMyGasTank> allGasTanks = new List<IMyGasTank>();
-//ALL TEXTPANELS
-List<IMyTextPanel> allTextPanels = new List<IMyTextPanel>();
-//ALL ASSEMBLERS
-List<IMyAssembler> allAssemblers = new List<IMyAssembler>();
-//All REFINERIES
-List<IMyRefinery> allRefineries = new List<IMyRefinery>();
-
-
-
-double hydrogenCapacity;
-double hydrogenStorage;
-int hydrogenTankCount;
-double oxygenCapacity;
-double oxygenStorage;
-int oxygenTankCount;
-
-double numberOfItems;
+//Cargo Display And Assembly
 
 public Program()
 {
     //updating only once every 100 ticks since timing is not critical
     Runtime.UpdateFrequency = UpdateFrequency.Update100;
 }
-
 public void Main(string argument, UpdateType updateSource)
 {
+    //ALL CARGO CONTAINERS
+    List<IMyCargoContainer> allCargoContainers = new List<IMyCargoContainer>();
+    allCargoContainers.Clear();
+    allCargoContainers = CreateCargoContainerList();
 
-    CreateCargoContainerList();
-    CreateGasTankList();
-    CreateTextPanelList();
+    //ALL GAS TANKS(OXYGEN AND HYDROGEN)
+    List<IMyGasTank> allGasTanks = new List<IMyGasTank>();
+    allGasTanks.Clear();
+    allGasTanks = CreateGasTankList();
+    double hydrogenCapacity = 0;
+    double hydrogenStorage = 0;
+    int hydrogenTankCount = 0;
+    double oxygenCapacity = 0;
+    double oxygenStorage = 0;
+    int oxygenTankCount = 0;
+    GetGasInventory(allGasTanks, out hydrogenCapacity, out hydrogenStorage, out hydrogenTankCount, out oxygenCapacity, out oxygenStorage, out oxygenTankCount);
 
-    GetGasInventory();
+    //ALL TEXTPANELS
+    List<IMyTextPanel> allTextPanels = new List<IMyTextPanel>();
+    allTextPanels.Clear();
+    allTextPanels = CreateTextPanelList();
 
-    CreateAssemblerList();
-    CreateRefineryList();
+    //ALL ASSEMBLERS
+    List<IMyAssembler> allAssemblers = new List<IMyAssembler>();
+    allAssemblers.Clear();
+    allAssemblers = CreateAssemblerList();
+
+    //All REFINERIES
+    List<IMyRefinery> allRefineries = new List<IMyRefinery>();
+    allRefineries.Clear();
+    allRefineries = CreateRefineryList();
 
     //Assembly is contained within
-    CargoDisplayAndAssembly();
-
-
-
+    CargoDisplayAndAssembly(allCargoContainers, hydrogenCapacity, hydrogenStorage, hydrogenTankCount, oxygenCapacity, oxygenStorage, oxygenTankCount, allTextPanels, allAssemblers, allRefineries);
 }
-public void CreateCargoContainerList()
+public List<IMyCargoContainer> CreateCargoContainerList()
 {
-    //clearing the list
-    allCargoContainers.Clear();
+    List<IMyCargoContainer> allCargoContainers_InFunction = new List<IMyCargoContainer>();
     //creating the list
-    GridTerminalSystem.GetBlocksOfType<IMyCargoContainer>(allCargoContainers, b => b.CubeGrid == Me.CubeGrid);
+    GridTerminalSystem.GetBlocksOfType<IMyCargoContainer>(allCargoContainers_InFunction, b => b.CubeGrid == Me.CubeGrid);
+    return allCargoContainers_InFunction;
 }
-public void CreateGasTankList()
+public List<IMyGasTank> CreateGasTankList()
 {
-    //clearing the list
-    allGasTanks.Clear();
+    List<IMyGasTank> allGasTanks_InFunction = new List<IMyGasTank>();
     //creating the list
-    GridTerminalSystem.GetBlocksOfType<IMyGasTank>(allGasTanks, b => b.CubeGrid == Me.CubeGrid);
+    GridTerminalSystem.GetBlocksOfType<IMyGasTank>(allGasTanks_InFunction, b => b.CubeGrid == Me.CubeGrid);
+    return allGasTanks_InFunction;
 }
-public void CreateTextPanelList()
+public void GetGasInventory(List<IMyGasTank> allGasTanks, out double hydrogenCapacity_InFunction, out double hydrogenStorage_InFunction, out int hydrogenTankCount_InFunction, out double oxygenCapacity_InFunction, out double oxygenStorage_InFunction, out int oxygenTankCount_InFunction)
 {
-    //clearing the list
-    allTextPanels.Clear();
-    //creating the list
-    GridTerminalSystem.GetBlocksOfType<IMyTextPanel>(allTextPanels, b => b.CubeGrid == Me.CubeGrid);
-}
-public void GetGasInventory()
-{
-    //clearing capacities for new run of script
-
-    hydrogenCapacity = 0;
-    hydrogenStorage = 0;
-    hydrogenTankCount = 0;
-    oxygenCapacity = 0;
-    oxygenStorage = 0;
-    oxygenTankCount = 0;
+    //need to give the varialbes an initial value else the += functionality of the following for loop fails on first iteration
+    hydrogenCapacity_InFunction = 0;
+    hydrogenStorage_InFunction = 0;
+    hydrogenTankCount_InFunction = 0;
+    oxygenCapacity_InFunction = 0;
+    oxygenStorage_InFunction = 0;
+    oxygenTankCount_InFunction = 0;
 
     //get the total possible volume of hydrogen and oxygen on the ship
     for (int i = 0; i < allGasTanks.Count(); i++)
     {
-
         //checking if the gas tank is hydrogen
         if (allGasTanks[i].BlockDefinition.SubtypeId.Contains("Hydro") && allGasTanks[i].IsFunctional)
         {
-            hydrogenCapacity += allGasTanks[i].Capacity;
-            hydrogenStorage += allGasTanks[i].FilledRatio * allGasTanks[i].Capacity;
-            hydrogenTankCount++;
-
+            hydrogenCapacity_InFunction += allGasTanks[i].Capacity;
+            hydrogenStorage_InFunction += allGasTanks[i].FilledRatio * allGasTanks[i].Capacity;
+            hydrogenTankCount_InFunction++;
         }
         //not hydrogen so it is oxygen
         else if (allGasTanks[i].IsFunctional)
         {
-            oxygenCapacity += allGasTanks[i].Capacity;
-            oxygenStorage += allGasTanks[i].FilledRatio * allGasTanks[i].Capacity;
-            oxygenTankCount++;
+            oxygenCapacity_InFunction += allGasTanks[i].Capacity;
+            oxygenStorage_InFunction += allGasTanks[i].FilledRatio * allGasTanks[i].Capacity;
+            oxygenTankCount_InFunction++;
         }
-
-
-
-
     }
-
-
 }
-public void CargoDisplayAndAssembly()
+public List<IMyTextPanel> CreateTextPanelList()
+{
+    List<IMyTextPanel> allTextPanels_InFunction = new List<IMyTextPanel>();
+    //creating the list
+    GridTerminalSystem.GetBlocksOfType<IMyTextPanel>(allTextPanels_InFunction, b => b.CubeGrid == Me.CubeGrid);
+    return allTextPanels_InFunction;
+}
+public List<IMyAssembler> CreateAssemblerList()
+{
+    List<IMyAssembler> allAssemblers_InFunction = new List<IMyAssembler>();
+    //creating the assembler list
+    GridTerminalSystem.GetBlocksOfType<IMyAssembler>(allAssemblers_InFunction, b => b.CubeGrid == Me.CubeGrid);
+    return allAssemblers_InFunction;
+}
+public List<IMyRefinery> CreateRefineryList()
+{
+    List<IMyRefinery> allRefineries_InFunction = new List<IMyRefinery>();
+    //creating the refinery list
+    GridTerminalSystem.GetBlocksOfType<IMyRefinery>(allRefineries_InFunction, b => b.CubeGrid == Me.CubeGrid);
+    return allRefineries_InFunction;
+}
+public void CargoDisplayAndAssembly(List<IMyCargoContainer> allCargoContainers_InFunction, double hydrogenCapacity_InFunction, double hydrogenStorage_InFunction, int hydrogenTankCount_InFunction, double oxygenCapacity_InFunction, double oxygenStorage_InFunction, int oxygenTankCount_InFunction, List<IMyTextPanel> allTextPanels_InFunction, List<IMyAssembler> allAssemblers_InFunction, List<IMyRefinery> allRefineries_InFunction)
 {
     //method to display all the ores, ingots, components, ammo, hydrogen, oxygen, and other things in the cargo containers
-
 
     //string of the text panel's custom data
     string[] displayRequests;
     //null assignment on separate line to make sure it is explicit over multiple runs
     displayRequests = null;
-
     string itemCategory = null;
-
-    //"*******************************************"
     string inventoryDisplay;
+    //"*******************************************" - general max length of text for display
 
+    //variable to keep track of how many of each item type there are in containers
+    double numberOfItems;
 
     //side idea is if there is a way for the game to go through the list of string values of items types for me
-    for (int k = 0; k < allTextPanels.Count(); k++)
+    for (int k = 0; k < allTextPanels_InFunction.Count(); k++)
     {
         //following if statements check the custom data field of the textpanel and display the categories that are called for
-        displayRequests = allTextPanels[k].CustomData.Split(new string[] { "\n" }, StringSplitOptions.None);
+        displayRequests = allTextPanels_InFunction[k].CustomData.Split(new string[] { "\n" }, StringSplitOptions.None);
         if (displayRequests[0].ToLower().Replace(" ", "") == "cargodisplayandassembly")
         {
-
             inventoryDisplay = "GRID CARGO AND ASSEMBLY\n";
-            FormatTextPanel(allTextPanels[k]);
+            FormatTextPanel(allTextPanels_InFunction[k]);
             //add changing of background if necessary
-
-
-
 
             //for every line except the first, since it is the text panel identifier, check to see if they can be counted and displayed
             for (int n = 1; n < displayRequests.Count(); n++)
             {
-
-
-
                 if (displayRequests[n].ToLower().Replace(" ", "").Contains("linebreak"))
                 {
                     inventoryDisplay = inventoryDisplay + "\n";
                 }
                 else if (displayRequests[n].IndexOf("/") > 0)
                 {
-
-
                     if (displayRequests[n].ToLower().Contains("hydrogen"))
                     {
                         itemCategory = "hydrogen";
@@ -168,12 +161,10 @@ public void CargoDisplayAndAssembly()
                     {
                         itemCategory = "component tool or ammo";
                     }
-
-
                     //adding to the display if it is an item and not a gas type
                     if (itemCategory != "hydrogen" && itemCategory != "oxygen")
                     {
-                        numberOfItems = GetNumberOfItems(allCargoContainers, allAssemblers, allRefineries, displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), itemCategory);
+                        numberOfItems = GetNumberOfItems(allCargoContainers_InFunction, allAssemblers_InFunction, allRefineries_InFunction, displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), itemCategory);
                         //The line is requesting a production goal so use the = sign to find the display name and display the production goal
                         if (displayRequests[n].IndexOf("=") > 0)
                         {
@@ -183,94 +174,67 @@ public void CargoDisplayAndAssembly()
                             if (Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1)) > numberOfItems)
                             {
                                 //send the difference to the assemblers to check if the required items are in queue, otherwise create item queue
-                                Assembly(displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""));
+                                Assembly(displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), allAssemblers_InFunction);
                             }
                         }
                         //No production goal so use the line length to find the display name and don't display any production goal
                         else
                         {
-                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(numberOfItems)+"\n";
+                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(numberOfItems) + "\n";
                         }
-
-
-
-
                     }
                     else //it is requesting a gas type
                     {
                         if (displayRequests[n].ToLower().Replace(" ", "").Contains("hydrogenstorage"))
                         {
-                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(hydrogenStorage) + "L" + "\n";
+                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(hydrogenStorage_InFunction) + "L" + "\n";
                         }
                         else if (displayRequests[n].ToLower().Replace(" ", "").Contains("hydrogentankcount"))
                         {
-                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(hydrogenTankCount) + "\n";
+                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(hydrogenTankCount_InFunction) + "\n";
                         }
                         else if (displayRequests[n].ToLower().Replace(" ", "").Contains("hydrogencapacity"))
                         {
-                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(hydrogenCapacity) + "L" + "\n";
+                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(hydrogenCapacity_InFunction) + "L" + "\n";
                             //inventoryDisplay = inventoryDisplay + "it worked\n";
                         }
                         else if (displayRequests[n].ToLower().Replace(" ", "").Contains("oxygenstorage"))
                         {
-                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(oxygenStorage) + "L" + "\n";
+                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(oxygenStorage_InFunction) + "L" + "\n";
                         }
                         else if (displayRequests[n].ToLower().Replace(" ", "").Contains("oxygentankcount"))
                         {
-                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(oxygenTankCount) + "\n";
+                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(oxygenTankCount_InFunction) + "\n";
                         }
                         else if (displayRequests[n].ToLower().Replace(" ", "").Contains("oxygencapacity"))
                         {
-                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(oxygenCapacity) + "L" + "\n";
+                            inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(oxygenCapacity_InFunction) + "L" + "\n";
                         }
                     }
                 }
             }
 
-
             //printing all the textlines onto the lcd
-            allTextPanels[k].WriteText(inventoryDisplay);
-
-
-
-
+            allTextPanels_InFunction[k].WriteText(inventoryDisplay);
         }
         //listing information onto the dumby text panels
-        if (allTextPanels[k].CustomData.Contains("dumbylcd"))
+        if (allTextPanels_InFunction[k].CustomData.Contains("dumbylcd"))
         {
-            FormatTextPanel(allTextPanels[k]);
-            allTextPanels[k].WriteText("The custom data: " + allTextPanels[k].CustomData);
+            FormatTextPanel(allTextPanels_InFunction[k]);
+            allTextPanels_InFunction[k].WriteText("The custom data: " + allTextPanels_InFunction[k].CustomData);
         }
-
     }
-
-
 }
-public void CreateAssemblerList()
-{
-    //clearing the list
-    allAssemblers.Clear();
-    //creating the assembler list
-    GridTerminalSystem.GetBlocksOfType<IMyAssembler>(allAssemblers, b => b.CubeGrid == Me.CubeGrid);
-}
-public void CreateRefineryList()
-{
-    //clearing the list
-    allRefineries.Clear();
-    //creating the refinery list
-    GridTerminalSystem.GetBlocksOfType<IMyRefinery>(allRefineries, b => b.CubeGrid == Me.CubeGrid);
-}
-public void Assembly(string filename)
+public void Assembly(string filename, List<IMyAssembler> allAssemblers_InFunction)
 {
     MyDefinitionId blueprint;
     List<MyProductionItem> allProductionItems = new List<MyProductionItem>();
     MyFixedPoint count = 10;
 
-
-    for (int i = 0; i < allAssemblers.Count(); i++)
+    for (int i = 0; i < allAssemblers_InFunction.Count(); i++)
     {
         //puts the production queue of the assembler into allProductionItems
-        allAssemblers[i].GetQueue(allProductionItems);
+        allAssemblers_InFunction[i].GetQueue(allProductionItems);
 
         //checks if the assembler has a queue and only assigns new items into production if the queue is empty
         if (allProductionItems.Count == 0)
@@ -278,20 +242,18 @@ public void Assembly(string filename)
             //gets the blueprint of the filename, hardcoded functionality so updates may break this
             blueprint = StringToMyDefinitionId(filename);
             //only assigns work to assemblers that are not set to cooperative mode, recommended only one assembler not set to cooperative mode else the missing items will be entered into production multiple times
-            if (!allAssemblers[i].CooperativeMode)
+            if (!allAssemblers_InFunction[i].CooperativeMode)
             {
                 //ensures the assembler can accept the requested blueprint
-                if (allAssemblers[i].CanUseBlueprint(blueprint))
+                if (allAssemblers_InFunction[i].CanUseBlueprint(blueprint))
                 {
                     //number of missing items will be added to the production queue
-                    allAssemblers[i].AddQueueItem(blueprint, count);
+                    allAssemblers_InFunction[i].AddQueueItem(blueprint, count);
                     //the item has been sent to an assembler so break the loop to make sure it doesn't get assigned to every idle assembler
                     break;
                 }
             }
         }
-
-
     }
 }
 public double GetNumberOfItems(List<IMyCargoContainer> cargoContainers, List<IMyAssembler> assemblers, List<IMyRefinery> refineries, string subtypeId, string itemCategory)
@@ -321,14 +283,9 @@ public double GetNumberOfItems(List<IMyCargoContainer> cargoContainers, List<IMy
                 break;
         }
     }
-
-
-
     //checking all the assemblers sent for the number of items found within
     for (int k = 0; k < assemblers.Count; k++)
     {
-
-
         //finds the number of the type of item and stores the type of item into the global variable
         switch (itemCategory)
         {
@@ -380,7 +337,6 @@ public double GetNumberOfItems(List<IMyCargoContainer> cargoContainers, List<IMy
                 break;
         }
     }
-
     int forReturn = temp.ToIntSafe();
     return forReturn;
 }
@@ -402,6 +358,7 @@ public string FormatNumber(double number)
     originalNumber = number.ToString();
 
     //number is less than 10,000 so display full number
+
     if (originalNumber.Contains("."))
     {
         truncatedNumber = originalNumber.Substring(0, originalNumber.IndexOf(".") - 1);
@@ -459,7 +416,6 @@ public string FormatNumber(double number)
     }
     return formattedNumber;
 }
-
 public MyDefinitionId StringToMyDefinitionId(String subtypeId)
 {
     //game requires things to be hard coded so this is a series of if statements of supported blueprints to send to assemblers
@@ -578,6 +534,5 @@ public MyDefinitionId StringToMyDefinitionId(String subtypeId)
     {
         blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/none");
     }
-
     return blueprint;
 }
