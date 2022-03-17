@@ -13,6 +13,8 @@ public void Main(string argument, UpdateType updateSource)
     //As this is the directory display script only calls one subfunction
     DisplayDirectories();
 }
+
+
 //methods called directly by the main program
 public void DisplayDirectories()
 {
@@ -187,7 +189,7 @@ public void DisplayDirectories()
                                        "");
         }
         //checks if the text panel custom data contains the term for the space arm directory
-        if(allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("spacearmdirectory")
+        if(allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("spacearmdirectory"))
         {
             FormatTextPanel(allTextPanels[j]);
                                      //"*******************************************"
@@ -225,9 +227,12 @@ public void DisplayDirectories()
                                        "cockpit's custom data field added to their\n"+
                                        "name.\n"+
                                        "");
+        }
             
     }
 }
+
+
 public void FormatTextPanel(IMyTextPanel textPanel)
 {
     textPanel.FontSize = 1f;
