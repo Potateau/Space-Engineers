@@ -92,7 +92,7 @@ public void DisplayDirectories()
                                        "");
         }
         //checks if the text panel custom data contains the term for cargo display and assembly directory
-        if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargodisplayandassemblydirectory")
+        if (allTextPanels[j].CustomData.ToLower().Replace(" ", "").Contains("cargodisplayandassemblydirectory"))
         {
             FormatTextPanel(allTextPanels[j]);
             allTextPanels[j].WriteText("CARGO DISPLAY AND ASSEMBLY DIRECTORY\n" +
