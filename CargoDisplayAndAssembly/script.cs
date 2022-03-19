@@ -530,9 +530,14 @@ public MyDefinitionId StringToMyDefinitionId(String subtypeId)
     {
         blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/ZoneChip");
     }
+    else if (subtypeId == "RapidFireAutomaticRifleGun_Mag_50rd")
+    {
+        blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/RapidFireAutomaticRifleGun_Mag_50rd");
+    }
     else
     {
         blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/none");
     }
+    
     return blueprint;
 }
