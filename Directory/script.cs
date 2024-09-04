@@ -39,7 +39,7 @@ public void DisplayDirectories()
                                        "Requires related scripts to function\n" +
                                        "Display: \"cargo display directory\"\n" +
                                        "Display and Assembly:\n" +
-                                       "\"assembly directory\"\n" +
+                                       "\"cargo display and assembly directory\"\n" +
                                        "Sorting: \"cargo sorting directory\"\n" +
                                        "Space Arm: \"space arm directory\"\n" +
                                        "Displays contain more information if\n" +
