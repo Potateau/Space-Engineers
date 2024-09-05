@@ -8,6 +8,9 @@ List<IMyRefinery> allRefineries = new List<IMyRefinery>();
 List<IMyGasGenerator> allO2H2Generators = new List<IMyGasGenerator>();
 //ALL GAS TANKS (HYDROGEN AND OXYGEN)
 List<IMyGasTank> allGasTanks = new List<IMyGasTank>();
+//ALL CONNECTORS
+List<IMyShipConnector> allConnectors = new List<IMyShipConnector>();
+
 
 //temporary inventory
 IMyInventory tempInventory;
@@ -29,6 +32,7 @@ public void Main(string argument, UpdateType updateSource)
     CreateO2H2GeneratorList();
     CreateGasTankList();
     SortContainers();
+    CreateConnectorList();
 }
 
 //methods called directly by the main program
@@ -66,6 +70,13 @@ public void CreateGasTankList()
     allGasTanks.Clear();
     //creating the initial O2H2 list of all on the same grid as the programmable block
     GridTerminalSystem.GetBlocksOfType<IMyGasTank>(allGasTanks, b => b.CubeGrid == Me.CubeGrid);
+}
+public void CreateConnectorList()
+{
+    //clearing the lists
+    allConnectors.Clear();
+    //creating the initial Connectors list of all on the same grid as the programmable block
+    GridTerminalSystem.GetBlocksOfType<IMyShipConnector>(allConnectors, b => b.CubeGrid == Me.CubeGrid);
 }
 public void SortContainers()
 {
@@ -211,6 +222,20 @@ public void SortContainers()
         {
             //getting the item in the slot
             tempItem = allGasTanks[i].GetInventory(0).GetItemAt(x).Value;
+            //we always want to try to empty these tanks to store them with tools if possible
+            MoveToCorrectCargoContainer(tempItem);
+        }
+    }
+    for (int i = 0; i < allConnectors.Count(); i++)
+    {
+        //clearing contents in tempCargoContainer so items are not moved accidentally if following assignment fails
+        tempInventory = null;
+        //putting the current container into the temp variable so it can be accessed by other functions
+        tempInventory = allConnectors[i].GetInventory(0);
+        for (int x= allConnectors[i].GetInventory(0).ItemCount - 1; x >= 0; x--)
+        {
+            //getting the item in the slot
+            tempItem = allConnectors[i].GetInventory(0).GetItemAt(x).Value;
             //we always want to try to empty these tanks to store them with tools if possible
             MoveToCorrectCargoContainer(tempItem);
         }
