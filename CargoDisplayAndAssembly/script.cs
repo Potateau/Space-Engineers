@@ -229,11 +229,12 @@ public void Assembly(string filename, List<IMyAssembler> allAssemblers_InFunctio
 {
     MyDefinitionId blueprint;
     List<MyProductionItem> allProductionItems = new List<MyProductionItem>();
+    MyFixedPoint count;
     if(Me.TerminalRunArgument==null){
-        MyFixedPoint count = 10;
+        count = 10;
     }
     else {
-        MyFixedPoint count = Me.TerminalRunArgument;    
+        MyFixedPoint count = count.TryParseMe(TerminalRunArgument;    
     }
 
     for (int i = 0; i < allAssemblers_InFunction.Count(); i++)
