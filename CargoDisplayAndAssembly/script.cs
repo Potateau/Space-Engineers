@@ -230,11 +230,14 @@ public void Assembly(string filename, List<IMyAssembler> allAssemblers_InFunctio
     MyDefinitionId blueprint;
     List<MyProductionItem> allProductionItems = new List<MyProductionItem>();
     MyFixedPoint count;
-    if(Me.TerminalRunArgument==null){
-        count = 10;
+
+    int terminalRunArguementNumber;
+    bool validSensitivity = int.TryParse(Me.TerminalRunArgument, out terminalRunArguementNumber);
+    if(validSensitivity){
+        count = terminalRunArguementNumber;   
     }
     else {
-        MyFixedPoint count = count.TryParseMe(TerminalRunArgument;    
+        count = 10; 
     }
 
     for (int i = 0; i < allAssemblers_InFunction.Count(); i++)
