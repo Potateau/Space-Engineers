@@ -1,4 +1,5 @@
 //credit to JoeTheDestroyer from https://forum.keenswh.com/threads/aligning-ship-to-planet-gravity.7373513/ for script 
+//further edits by Potateau
 
 
 string REMOTE_CONTROL_NAME = ""; //Set name for remote control to orient on,
@@ -7,7 +8,7 @@ double CTRL_COEFF = 0.8; //Set lower if overshooting, set higher to respond quic
 int LIMIT_GYROS = 1; //Set to the max number of gyros to use
                      //(Using less gyros than you have allows you to still steer while
                      // leveler is operating.)
-double angleTolerance = 0.01;//adjusts the angle tolerance to align to gravity
+
 IMyRemoteControl rc;
 List<IMyGyro> gyros;
 
@@ -27,6 +28,22 @@ public void Main(string argument, UpdateType updateSource)
     {
         setup();
     }
+
+    //SET THE TOLERANCE
+    //Same tolerance for all angles
+    double angleTolerance = 0.01;//adjusts the angle tolerance to align to gravity
+    //checking if there is a terminal run argument to adjust the alignment tolerance
+    //getting the input arguement to the programmable block so players can custom set the sensitivity 
+    string terminalRunArguement = "";
+    double terminalRunArguementNumber = angleTolerance; //set the default to not accidentally change behaviour
+    terminalRunArguement = Me.TerminalRunArgument;
+    bool validSensitivity = double.TryParse(terminalRunArguement, out terminalRunArguementNumber);
+    //if there is a valid number in the run arguement then set the tolerance to that value
+    if (validSensitivity)
+    {
+        angleTolerance = terminalRunArguementNumber;
+    }
+
 
     //The orientation matrix of the grid
     Matrix orientationMatrix;
@@ -48,14 +65,19 @@ public void Main(string argument, UpdateType updateSource)
         var localGravity = Vector3D.Transform(gravityVector, MatrixD.Transpose(gyro.WorldMatrix.GetOrientation()));
 
         //we need a rotation angle to feed into the gyro
-        var rotation=Vector3D.Cross(localDown, localGravity);
+        var rotation = Vector3D.Cross(localDown, localGravity);
         double ang = rotation.Length();
-        ang = Math.Atan2(ang, Math.Sqrt(Math.Max(0.0, 1.0 - ang * ang))); //More numerically stable than: ang=Math.Asin(ang)
 
-        //if the angle is close enough then stop adjusting the orientation through the gyro
-        if (ang < angleTolerance)
+        //This is JoeTheDestroyer's method but it didn't make sense and either kept the ship perfectly level or didn't work at all with the tolerance value
+        //ang = Math.Atan2(ang, Math.Sqrt(Math.Max(0.0, 1.0 - ang * ang))); //More numerically stable than: ang=Math.Asin(ang)
+
+        //Less stable but it can take in a tolerance value in radians in the arguement field and works
+        //Same tolerance for all angles
+        ang = Math.Acos(Vector3D.Dot(localDown, localGravity) / (Math.Abs(localDown.Length()) * Math.Abs(localGravity.Length())));
+
+        if (Math.Abs(ang) < Math.Abs(angleTolerance))
         {//close enough
-            gyro.SetValueBool("Override",false);//effectively turns off the gyro
+            gyro.SetValueBool("Override", false);//effectively turns off the gyro
             continue;//stop this loop
         }
 
@@ -73,9 +95,9 @@ public void Main(string argument, UpdateType updateSource)
         gyro.SetValueBool("Override", true);
     }
 
-    
 
-    
+
+
 }
 
 void setup()
