@@ -1,0 +1,55 @@
+public Program()
+{
+    //do not need a runtime arguement as this should only need to run once
+}
+
+public void Main(string argument, UpdateType updateSource)
+{
+    // The main entry point of the script, invoked every time
+    // one of the programmable block's Run actions are invoked,
+    // or the script updates itself. The updateSource argument
+    // describes where the update came from. Be aware that the
+    // updateSource is a  bitfield  and might contain more than 
+    // one update type.
+    // 
+    // The method itself is required, but the arguments above
+    // can be removed if not needed.
+
+    string gridName = Me.CubeGrid.Name;
+    
+    //seeing if there is a custom delimiter to use
+    //else set the custom delimiter to a default
+    string terminalRunArguement = Me.TerminalRunArgument;
+    string customDelimiter;
+    if (terminalRunArguement != null)
+    {
+        customDelimiter = terminalRunArguement;
+    }
+    else
+    {
+        customDelimiter = " - ";
+    }
+
+    List<IMyTerminalBlock> myTerminalBlocks = new List<IMyTerminalBlock>();
+
+    //GridTerminalSystem.getblocks
+    GridTerminalSystem.GetBlocks(myTerminalBlocks);
+
+    //for each block that the programable block can see
+    myTerminalBlocks.ForEach(block => {
+        //if they are on the same grid as the programable block
+        if (block.CubeGrid == Me.CubeGrid)
+        {
+            //they are the same grid so we want this script renaming the block
+            //if the block does not contain the name of the grid
+            if (!block.CustomName.Contains(gridName))
+            {
+                //The block does not contain the grid name so we want to add it with a - to result in blockname - gridname
+                block.CustomName = block.Name + customDelimiter + gridName;
+            }
+        }
+        else { 
+            //Not the same grid, do not touch name
+        }
+    });
+}
