@@ -5,8 +5,8 @@ public Program()
 
 public void Main(string argument, UpdateType updateSource)
 {
-    string gridName = Me.CubeGrid.Name;
-    
+    string gridName = Me.CubeGrid.CustomName;
+
     //seeing if there is a custom delimiter to use
     //else set the custom delimiter to a default
     string terminalRunArguement = Me.TerminalRunArgument;
@@ -38,7 +38,8 @@ public void Main(string argument, UpdateType updateSource)
                 block.CustomName = block.CustomName + customDelimiter + gridName;
             }
         }
-        else { 
+        else
+        {
             //Not the same grid, do not touch name
         }
     });
