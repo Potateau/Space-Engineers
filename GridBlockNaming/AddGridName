@@ -5,16 +5,6 @@ public Program()
 
 public void Main(string argument, UpdateType updateSource)
 {
-    // The main entry point of the script, invoked every time
-    // one of the programmable block's Run actions are invoked,
-    // or the script updates itself. The updateSource argument
-    // describes where the update came from. Be aware that the
-    // updateSource is a  bitfield  and might contain more than 
-    // one update type.
-    // 
-    // The method itself is required, but the arguments above
-    // can be removed if not needed.
-
     string gridName = Me.CubeGrid.Name;
     
     //seeing if there is a custom delimiter to use
@@ -45,7 +35,7 @@ public void Main(string argument, UpdateType updateSource)
             if (!block.CustomName.Contains(gridName))
             {
                 //The block does not contain the grid name so we want to add it with a - to result in blockname - gridname
-                block.CustomName = block.Name + customDelimiter + gridName;
+                block.CustomName = block.CustomName + customDelimiter + gridName;
             }
         }
         else { 
