@@ -35,7 +35,7 @@ public void Main(string argument, UpdateType updateSource)
             if (!block.CustomName.Contains(gridName))
             {
                 //The block does not contain the grid name so we want to add it with a - to result in blockname - gridname
-                block.CustomName = block.CustomName + customDelimiter + gridName;
+                block.CustomName = block.DefinitionDisplayNameText + customDelimiter + gridName;
             }
         }
         else
