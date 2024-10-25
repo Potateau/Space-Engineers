@@ -1,6 +1,8 @@
 //credit to JoeTheDestroyer from https://forum.keenswh.com/threads/aligning-ship-to-planet-gravity.7373513/ for script 
 //further edits by Potateau
 
+//To Do
+//Add speed limit functionality
 
 string REMOTE_CONTROL_NAME = ""; //Set name for remote control to orient on,
                                  //leave blank to use first one found
