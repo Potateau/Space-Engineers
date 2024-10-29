@@ -18,6 +18,12 @@ IMyInventory tempInventory;
 MyFixedPoint bottleVolume = (MyFixedPoint)0.120;
 
 
+//get time
+DateTime timeNow = DateTime.Now;
+int timeNowSeconds;
+
+
+
 public Program()
 {
     Runtime.UpdateFrequency = UpdateFrequency.Update100;
@@ -26,6 +32,10 @@ public Program()
 //the main program
 public void Main(string argument, UpdateType updateSource)
 {
+    timeNow = DateTime.Now;
+    Int32.TryParse(timeNow.Second.ToString(), out timeNowSeconds);
+    
+
     CreateCargoContainerLists();
     CreateAssemblerLists();
     CreateRefineryLists();
@@ -200,11 +210,17 @@ public void SortContainers()
             //checking to make sure that there is volume available in the generator for a bottle and if not trying to take an item out and put it in the correct container
             //this would be relevant if filled with ice but no need to produce hydrogen or oxygen so the bottles never get refilled and player doesn't have tanks
 
-            if(allO2H2Generators[j].GetInventory(0).CurrentVolume>allO2H2Generators[j].GetInventory(0).MaxVolume-bottleVolume)
+            
+            
+
+
+            if (allO2H2Generators[j].GetInventory(0).CurrentVolume > allO2H2Generators[j].GetInventory(0).MaxVolume - bottleVolume && timeNowSeconds % 10 > 5)
             {
                 MoveToCorrectCargoContainer(tempItem);
             }
-            else if (allO2H2Generators[j].GetInventory(0).GetItemAt(x).Value.Type.SubtypeId.Contains("Bottle"))
+            
+
+            else if (allO2H2Generators[j].GetInventory(0).GetItemAt(x).Value.Type.SubtypeId.Contains("Bottle") && timeNowSeconds % 10 > 5)
             {
                 MoveToCorrectCargoContainer(tempItem);
             }
@@ -218,12 +234,15 @@ public void SortContainers()
         tempInventory = null;
         //putting the current container into the temp variable so it can be accessed by other functions
         tempInventory = allGasTanks[i].GetInventory(0);
-        for (int x= allGasTanks[i].GetInventory(0).ItemCount - 1; x >= 0; x--)
+        for (int x = allGasTanks[i].GetInventory(0).ItemCount - 1; x >= 0; x--)
         {
             //getting the item in the slot
             tempItem = allGasTanks[i].GetInventory(0).GetItemAt(x).Value;
             //we always want to try to empty these tanks to store them with tools if possible
-            MoveToCorrectCargoContainer(tempItem);
+            if (timeNowSeconds % 10 > 5)
+            {
+                MoveToCorrectCargoContainer(tempItem);
+            }
         }
     }
     for (int i = 0; i < allConnectors.Count(); i++)
@@ -232,7 +251,7 @@ public void SortContainers()
         tempInventory = null;
         //putting the current container into the temp variable so it can be accessed by other functions
         tempInventory = allConnectors[i].GetInventory(0);
-        for (int x= allConnectors[i].GetInventory(0).ItemCount - 1; x >= 0; x--)
+        for (int x = allConnectors[i].GetInventory(0).ItemCount - 1; x >= 0; x--)
         {
             //getting the item in the slot
             tempItem = allConnectors[i].GetInventory(0).GetItemAt(x).Value;
@@ -270,7 +289,7 @@ public bool MoveToCorrectCargoContainer(MyInventoryItem itemToMove)
             return true;
         }
         //hydrogen and oxygen bottles are stored with tools
-        else if ((itemToMove.Type.GetItemInfo().IsTool||itemToMove.Type.SubtypeId.Contains("Bottle")) & allCargoContainers[j].CustomData.ToLower().Contains("tool") & allCargoContainers[j].GetInventory(0).CanItemsBeAdded(itemToMove.Amount, itemToMove.Type))
+        else if ((itemToMove.Type.GetItemInfo().IsTool || itemToMove.Type.SubtypeId.Contains("Bottle")) & allCargoContainers[j].CustomData.ToLower().Contains("tool") & allCargoContainers[j].GetInventory(0).CanItemsBeAdded(itemToMove.Amount, itemToMove.Type))
         {
             tempInventory.TransferItemTo(allCargoContainers[j].GetInventory(0), itemToMove);
             return true;
@@ -291,4 +310,3 @@ public bool MoveToCorrectCargoContainer(MyInventoryItem itemToMove)
     }
     return false;
 }
-
