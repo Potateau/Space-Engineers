@@ -1,5 +1,7 @@
 //Cargo Display And Assembly
 
+int defautCount = 50;
+
 public Program()
 {
     //updating only once every 100 ticks since timing is not critical
@@ -233,20 +235,36 @@ public void Assembly(string filename, List<IMyAssembler> allAssemblers_InFunctio
 
     int terminalRunArguementNumber;
     bool validSensitivity = int.TryParse(Me.TerminalRunArgument, out terminalRunArguementNumber);
-    if(validSensitivity){
-        count = terminalRunArguementNumber;   
+    if (validSensitivity)
+    {
+        count = terminalRunArguementNumber;
     }
-    else {
-        count = 10; 
+    else
+    {
+        count = defautCount;
+    }
+
+
+    //checks if any of the assemblers have a queue. Need to check all assemblers so cooperative mode doesn't ruin things
+    bool isProductionQueue = false;
+    foreach (var assembler in allAssemblers_InFunction)
+    {
+        assembler.GetQueue(allProductionItems);
+        
+        if (allProductionItems.Count > 0)
+        {
+            isProductionQueue = true;
+        }    
     }
 
     for (int i = 0; i < allAssemblers_InFunction.Count(); i++)
     {
         //puts the production queue of the assembler into allProductionItems
-        allAssemblers_InFunction[i].GetQueue(allProductionItems);
+        //allAssemblers_InFunction[i].GetQueue(allProductionItems); commented out as foreach loop above does this now
 
         //checks if the assembler has a queue and only assigns new items into production if the queue is empty
-        if (allProductionItems.Count == 0)
+        //if (allProductionItems.Count == 0) commented out as we use isProductionQueue instead now
+        if (!isProductionQueue)
         {
             //gets the blueprint of the filename, hardcoded functionality so updates may break this
             blueprint = StringToMyDefinitionId(filename);
@@ -433,15 +451,19 @@ public MyDefinitionId StringToMyDefinitionId(String subtypeId)
     itemType = MyItemType.MakeComponent(subtypeId);
     if (subtypeId == "Missile200mm")
     {
-        blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/Missile200mm");
+        blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/Position0100_Missile200mm");
     }
     else if (subtypeId == "NATO_25x184mm")
     {
-        blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/NATO_25x184mmMagazine");
+        blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/Position0080_NATO_25x184mmMagazine");
     }
     else if (subtypeId == "NATO_5p56x45mm")
     {
         blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/NATO_5p56x45mmMagazine");
+    }
+    else if (subtypeId == "AutocannonClip")
+    {
+        blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/Position0090_AutocannonClip");
     }
     else if (subtypeId == "BulletproofGlass")
     {
@@ -490,6 +512,10 @@ public MyDefinitionId StringToMyDefinitionId(String subtypeId)
     else if (subtypeId == "Medical")
     {
         blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/MedicalComponent");
+    }
+    else if (subtypeId == "MediumCalibreAmmo")
+    {
+        blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/Position0110_MediumCalibreAmmo");
     }
     else if (subtypeId == "MetalGrid")
     {
@@ -547,6 +573,7 @@ public MyDefinitionId StringToMyDefinitionId(String subtypeId)
     {
         blueprint = MyDefinitionId.Parse("MyObjectBuilder_BlueprintDefinition/none");
     }
-    
+
     return blueprint;
 }
+    
