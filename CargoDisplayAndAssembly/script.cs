@@ -384,17 +384,19 @@ public string FormatNumber(double number)
 
     originalNumber = number.ToString();
 
-    //number is less than 10,000 so display full number
+    
 
     if (originalNumber.Contains("."))
     {
-        truncatedNumber = originalNumber.Substring(0, originalNumber.IndexOf(".") - 1);
+
+        truncatedNumber = originalNumber.Substring(0, originalNumber.IndexOf("."));// - 1);
     }
     else
     {
         truncatedNumber = originalNumber;
     }
 
+    //number is less than 10,000 so display full number
     if (truncatedNumber.Length < 5)
     {
         for (int i = 0; i < truncatedNumber.Length + numberOfCommas; i++)
@@ -576,4 +578,3 @@ public MyDefinitionId StringToMyDefinitionId(String subtypeId)
 
     return blueprint;
 }
-    
