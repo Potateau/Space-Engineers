@@ -32,17 +32,20 @@ public Program()
 //the main program
 public void Main(string argument, UpdateType updateSource)
 {
-    timeNow = DateTime.Now;
-    Int32.TryParse(timeNow.Second.ToString(), out timeNowSeconds);
-    //Me.CustomName = timeNow.Second.ToString();
-
-    CreateCargoContainerLists();
-    CreateAssemblerLists();
-    CreateRefineryLists();
-    CreateO2H2GeneratorList();
-    CreateGasTankList();
-    CreateConnectorList();
-    SortContainers();
+    try {
+        timeNow = DateTime.Now;
+        Int32.TryParse(timeNow.Second.ToString(), out timeNowSeconds);
+        //Me.CustomName = timeNow.Second.ToString();
+    
+        CreateCargoContainerLists();
+        CreateAssemblerLists();
+        CreateRefineryLists();
+        CreateO2H2GeneratorList();
+        CreateGasTankList();
+        CreateConnectorList();
+        SortContainers();
+    }
+    catch { }//we dont care about handling errors, we just want to move past errors here and try again next tick
 }
 
 //methods called directly by the main program
