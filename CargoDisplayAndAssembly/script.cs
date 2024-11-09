@@ -1,6 +1,6 @@
 //Cargo Display And Assembly
 
-int defautCount = 50;
+//int defautCount = 50; //depreciated, the script now queues the entire missing amount
 
 public Program()
 {
@@ -173,10 +173,11 @@ public void CargoDisplayAndAssembly(List<IMyCargoContainer> allCargoContainers_I
                             inventoryDisplay = inventoryDisplay + displayRequests[n].Substring(displayRequests[n].IndexOf("/") + 1, displayRequests[n].IndexOf("=") - displayRequests[n].IndexOf("/") - 1) + ": " + FormatNumber(numberOfItems);
                             inventoryDisplay = inventoryDisplay + "/" + FormatNumber(Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1))) + "\n";
                             //check if the number of items requested is more than the number of items stored
-                            if (Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1)) > numberOfItems)
+                            double numberOfItemsdifference = Convert.ToDouble(displayRequests[n].Substring(displayRequests[n].IndexOf("=") + 1, displayRequests[n].Length - displayRequests[n].IndexOf("=") - 1)) - numberOfItems;
+                            if (numberOfItemsdifference>0)
                             {
                                 //send the difference to the assemblers to check if the required items are in queue, otherwise create item queue
-                                Assembly(displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), allAssemblers_InFunction);
+                                Assembly(displayRequests[n].Substring(0, displayRequests[n].IndexOf("/")).Replace(" ", "").Replace("Ore", "").Replace("ore", "").Replace("Ingot", "").Replace("ingot", ""), allAssemblers_InFunction, numberOfItemsdifference);
                             }
                         }
                         //No production goal so use the line length to find the display name and don't display any production goal
@@ -227,12 +228,13 @@ public void CargoDisplayAndAssembly(List<IMyCargoContainer> allCargoContainers_I
         }
     }
 }
-public void Assembly(string filename, List<IMyAssembler> allAssemblers_InFunction)
+public void Assembly(string filename, List<IMyAssembler> allAssemblers_InFunction, double numberOfItemsdifference_InFunction)
 {
     MyDefinitionId blueprint;
     List<MyProductionItem> allProductionItems = new List<MyProductionItem>();
     MyFixedPoint count;
 
+    /* //depreciated, the script now queues the entire missing amount
     int terminalRunArguementNumber;
     bool validSensitivity = int.TryParse(Me.TerminalRunArgument, out terminalRunArguementNumber);
     if (validSensitivity)
@@ -242,7 +244,7 @@ public void Assembly(string filename, List<IMyAssembler> allAssemblers_InFunctio
     else
     {
         count = defautCount;
-    }
+    }*/
 
 
     //checks if any of the assemblers have a queue. Need to check all assemblers so cooperative mode doesn't ruin things
@@ -260,10 +262,10 @@ public void Assembly(string filename, List<IMyAssembler> allAssemblers_InFunctio
     for (int i = 0; i < allAssemblers_InFunction.Count(); i++)
     {
         //puts the production queue of the assembler into allProductionItems
-        //allAssemblers_InFunction[i].GetQueue(allProductionItems); commented out as foreach loop above does this now
+        //allAssemblers_InFunction[i].GetQueue(allProductionItems); //commented out as foreach loop above does this now
 
         //checks if the assembler has a queue and only assigns new items into production if the queue is empty
-        //if (allProductionItems.Count == 0) commented out as we use isProductionQueue instead now
+        //if (allProductionItems.Count == 0) //commented out as we use isProductionQueue instead now
         if (!isProductionQueue)
         {
             //gets the blueprint of the filename, hardcoded functionality so updates may break this
@@ -275,7 +277,7 @@ public void Assembly(string filename, List<IMyAssembler> allAssemblers_InFunctio
                 if (allAssemblers_InFunction[i].CanUseBlueprint(blueprint))
                 {
                     //number of missing items will be added to the production queue
-                    allAssemblers_InFunction[i].AddQueueItem(blueprint, count);
+                    allAssemblers_InFunction[i].AddQueueItem(blueprint, numberOfItemsdifference_InFunction);
                     //the item has been sent to an assembler so break the loop to make sure it doesn't get assigned to every idle assembler
                     break;
                 }
