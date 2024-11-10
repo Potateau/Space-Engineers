@@ -297,7 +297,7 @@ public bool MoveToCorrectCargoContainer(MyInventoryItem itemToMove)
                 if (timeNowSeconds % 10 > 5)
                 {
                     tempInventory.TransferItemTo(allCargoContainers[j].GetInventory(0), itemToMove);
-                    Me.CustomName = "Here";
+                    //Me.CustomName = "Here";
 
                 }
                 //put the return true out of the if as we want it to skip over this item, it did successfully try to move the item even if it got in the else if
