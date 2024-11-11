@@ -36,7 +36,8 @@ public void Main(string argument, UpdateType updateSource)
         timeNow = DateTime.Now;
         Int32.TryParse(timeNow.Second.ToString(), out timeNowSeconds);
         //Me.CustomName = timeNow.Second.ToString();
-    
+
+        //think about wrapping the create functions in something that stops it from running every cycle. We can save this list and only update it every few seconds.
         CreateCargoContainerLists();
         CreateAssemblerLists();
         CreateRefineryLists();
